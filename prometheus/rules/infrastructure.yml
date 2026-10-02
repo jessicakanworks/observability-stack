@@ -1,0 +1,42 @@
+groups:
+  - name: infrastructure
+    rules:
+      - alert: HostDown
+        expr: up{job="node"} == 0
+        for: 3m
+        labels: {severity: critical}
+        annotations: {summary: "{{ $labels.instance }} is unreachable"}
+      - alert: HighCPU
+        expr: 100 - avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100 > 85
+        for: 15m
+        labels: {severity: warning}
+        annotations: {summary: "CPU > 85% on {{ $labels.instance }}"}
+      - alert: LowDiskSpace
+        expr: node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes < 0.10
+        for: 10m
+        labels: {severity: critical}
+        annotations: {summary: "Less than 10% disk free on {{ $labels.instance }} {{ $labels.mountpoint }}"}
+      - alert: MemoryPressure
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Available memory < 10% on {{ $labels.instance }}"}
+  - name: jvm
+    rules:
+      - alert: JvmHeapHigh
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.90
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "JVM heap > 90% on {{ $labels.instance }}"}
+      - alert: AppEndpointDown
+        expr: probe_success{job="blackbox_http"} == 0
+        for: 2m
+        labels: {severity: critical}
+        annotations: {summary: "HTTP probe failing for {{ $labels.instance }}"}
+  - name: network
+    rules:
+      - alert: InterfaceDown
+        expr: ifOperStatus{ifAdminStatus="1"} != 1
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Interface {{ $labels.ifDescr }} down on {{ $labels.instance }}"}

@@ -1,0 +1,2 @@
+- targets: ["10.10.2.11:8080"]
+  labels: {env: dev, app: ifmis-core}

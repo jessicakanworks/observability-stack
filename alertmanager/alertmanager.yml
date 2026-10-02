@@ -1,0 +1,23 @@
+route:
+  receiver: ops-email
+  group_by: [alertname, instance]
+  group_wait: 30s
+  repeat_interval: 4h
+  routes:
+    - matchers: [severity="critical"]
+      receiver: ops-critical
+receivers:
+  - name: ops-email
+    email_configs:
+      - to: ops-team@example.gov.rw
+        from: alertmanager@example.gov.rw
+        smarthost: smtp.example.gov.rw:587
+        auth_username: alertmanager
+        auth_password_file: /etc/alertmanager/smtp_password
+  - name: ops-critical
+    email_configs:
+      - to: ops-oncall@example.gov.rw
+        from: alertmanager@example.gov.rw
+        smarthost: smtp.example.gov.rw:587
+        auth_username: alertmanager
+        auth_password_file: /etc/alertmanager/smtp_password

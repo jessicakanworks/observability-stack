@@ -1,0 +1,4 @@
+# Generated with snmp_exporter generator for IF-MIB; replace with your generated file.
+if_mib:
+  walk: [1.3.6.1.2.1.2, 1.3.6.1.2.1.31.1.1]
+  auth: {community: public}
