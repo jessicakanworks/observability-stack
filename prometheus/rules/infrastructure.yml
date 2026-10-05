@@ -40,3 +40,10 @@ groups:
         for: 5m
         labels: {severity: warning}
         annotations: {summary: "Interface {{ $labels.ifDescr }} down on {{ $labels.instance }}"}
+  - name: patching
+    rules:
+      - alert: RebootRequired
+        expr: node_reboot_required > 0
+        for: 24h
+        labels: {severity: warning}
+        annotations: {summary: "{{ $labels.instance }} has pending updates requiring a reboot"}
